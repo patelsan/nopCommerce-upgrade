@@ -6,15 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Web;
-using System.Web.Compilation;
 using Nop.Core.ComponentModel;
 using Nop.Core.Plugins;
 
 //Contributor: Umbraco (http://www.umbraco.com). Thanks a lot! 
 //SEE THIS POST for full details of what this does - http://shazwazza.com/post/Developing-a-plugin-framework-in-ASPNET-with-medium-trust.aspx
 
-[assembly: PreApplicationStartMethod(typeof(PluginManager), "Initialize")]
 namespace Nop.Core.Plugins
 {
     /// <summary>
@@ -356,10 +353,7 @@ namespace Nop.Core.Plugins
             //we can now register the plugin definition
             var shadowCopiedAssembly = Assembly.Load(AssemblyName.GetAssemblyName(shadowCopiedPlug.FullName));
 
-            //add the reference to the build manager
-            Debug.WriteLine("Adding to BuildManager: '{0}'", shadowCopiedAssembly.FullName);
-            BuildManager.AddReferencedAssembly(shadowCopiedAssembly);
-
+            //return the loaded assembly
             return shadowCopiedAssembly;
         }
 
