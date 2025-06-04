@@ -9,8 +9,6 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web;
-using System.Web.Hosting;
 
 namespace Nop.Core
 {
@@ -184,29 +182,7 @@ namespace Nop.Core
         {
             if (!_trustLevel.HasValue)
             {
-                //set minimum
-                _trustLevel = AspNetHostingPermissionLevel.None;
-
-                //determine maximum
-                foreach (AspNetHostingPermissionLevel trustLevel in new[] {
-                                AspNetHostingPermissionLevel.Unrestricted,
-                                AspNetHostingPermissionLevel.High,
-                                AspNetHostingPermissionLevel.Medium,
-                                AspNetHostingPermissionLevel.Low,
-                                AspNetHostingPermissionLevel.Minimal
-                            })
-                {
-                    try
-                    {
-                        new AspNetHostingPermission(trustLevel).Demand();
-                        _trustLevel = trustLevel;
-                        break; //we've set the highest permission we can
-                    }
-                    catch (System.Security.SecurityException)
-                    {
-                        continue;
-                    }
-                }
+                _trustLevel = AspNetHostingPermissionLevel.Unrestricted;
             }
             return _trustLevel.Value;
         }
@@ -342,16 +318,23 @@ namespace Nop.Core
         /// <returns>The physical path. E.g. "c:\inetpub\wwwroot\bin"</returns>
         public static string MapPath(string path)
         {
-            if (HostingEnvironment.IsHosted)
-            {
-                //hosted
-                return HostingEnvironment.MapPath(path);
-            }
-
-            //not hosted. For example, run in unit tests
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            path = path.Replace("~/", "").TrimStart('/').Replace('/', '\\');
+            var baseDirectory = AppContext.BaseDirectory;
+            path = path.Replace("~/", string.Empty).TrimStart('/')
+                .Replace('/', Path.DirectorySeparatorChar);
             return Path.Combine(baseDirectory, path);
-        }        
+        }
+    }
+
+    /// <summary>
+    /// Simplified hosting permission levels
+    /// </summary>
+    public enum AspNetHostingPermissionLevel
+    {
+        None,
+        Minimal,
+        Low,
+        Medium,
+        High,
+        Unrestricted
     }
 }

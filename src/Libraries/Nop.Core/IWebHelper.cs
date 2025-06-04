@@ -1,4 +1,4 @@
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace Nop.Core
 {
@@ -83,7 +83,7 @@ namespace Nop.Core
         /// .axd
         /// .ashx
         /// </remarks>
-        bool IsStaticResource(HttpRequest request);        
+        bool IsStaticResource(HttpRequest request);
 
         /// <summary>
         /// Modifies query string
